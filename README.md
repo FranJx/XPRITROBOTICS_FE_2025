@@ -1,4 +1,4 @@
-
+![Logo](t-photos/XpriT_Robotics_Logo.jpg)
 ## - XpriT Robotics – WRO 2025 Future Engineers
 
 ### Engineering Materials
@@ -7,13 +7,13 @@ This repository contains the engineering materials of our autonomous vehicle mod
 
 ### Repository Structure
 
-* **t-photos/** – Two team photos: a formal one and a light-hearted group shot.
-* **v-photos/** – Six images of the vehicle: front, back, left, right, top, and bottom.
-* **video/** – A `video.md` containing a link to a YouTube video (public or link-accessible) showing at least 30 seconds of autonomous driving—for each challenge type. 
-* **schemes/** – Electromechanical schematic diagrams (JPEG, PNG, or PDF) showing how components (electronics, motors, sensors) connect. 
-* **src/** – Control software source code for all programmed components.
-* **models/** – Files for 3D-printed, laser-cut, or CNC-machined vehicle parts. (If none, the directory can be removed.)
-* **other/** – Additional documentation: e.g., guide for connecting to SBC/SBM, hardware specs, communication protocols, datasets. (Can be removed if empty.)
+* [**t-photos**](#t-photos/) – Two team photos: a formal one and a light-hearted group shot.
+* [**v-photos**](#v-photos/) – Six images of the vehicle: front, back, left, right, top, and bottom.
+* [**videos**](#videos/) – A `video.md` containing a link to a YouTube video (public or link-accessible) showing at least 30 seconds of autonomous driving—for each challenge type. 
+* [**schemes**](#schemes/) – Electromechanical schematic diagrams (JPEG, PNG, or PDF) showing how components (electronics, motors, sensors) connect. 
+* [**src**](#src/) – Control software source code for all programmed components.
+* [**models**](#models/) – Files for 3D-printed, laser-cut, or CNC-machined vehicle parts. (If none, the directory can be removed.)
+* [**others**](#others/) – Additional documentation: e.g., guide for connecting to SBC/SBM, hardware specs, communication protocols, datasets. (Can be removed if empty.)
 
 ---
 
