@@ -1,0 +1,337 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <Servo.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <VL53L0X.h>
+
+// Pines del motor y encoder
+#define MA1 5
+#define MA2 4
+#define PWM 6
+#define ENCODER_A 3
+
+// Servo y BNO055
+#define SERVO_PIN 9
+
+// Pines XSHUT
+#define XSHUT_2 11
+#define XSHUT_3 12
+
+// Direcciones I2C nuevas
+#define NEW_ADDRESS_1 0x30
+#define NEW_ADDRESS_2 0x31
+#define NEW_ADDRESS_3 0x32
+
+// Parámetros del encoder y rueda
+const float WHEEL_DIAMETER_MM = 35.0;
+const float WHEEL_PERIMETER_MM = WHEEL_DIAMETER_MM * 3.1416;
+const int ENCODER_PULSES_PER_REV = 420;
+const float PULSES_PER_MM = ENCODER_PULSES_PER_REV / WHEEL_PERIMETER_MM;
+const int DIST_MM = 450; // 10 cm aprox
+const int TARGET_PULSES = PULSES_PER_MM * DIST_MM;
+
+// PID parámetros
+float Kp = 0.9;
+float Ki = 0.0;
+float Kd = 1.0;
+
+volatile long encoderCount = 0;
+Servo direccion;
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+
+VL53L0X sensor1; // Frontal
+VL53L0X sensor2; // Izquierdo
+VL53L0X sensor3; // Derecho
+
+int distVL1 = 0;
+int distVL2 = 0;
+int distVL3 = 0;
+
+int orientation = 0; // 0=North, 1=East, 2=South, 3=West
+int facing = 0;      // orientation * 90
+
+void encoderISR() {
+  encoderCount++;
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(8, OUTPUT); // buzzer
+  pinMode(MA1, OUTPUT);
+  pinMode(MA2, OUTPUT);
+  pinMode(PWM, OUTPUT);
+  pinMode(ENCODER_A, INPUT_PULLUP);
+
+  direccion.attach(SERVO_PIN);
+  direccion.write(90); // Recto
+
+  attachInterrupt(digitalPinToInterrupt(ENCODER_A), encoderISR, RISING);
+
+  if (!bno.begin()) {
+    Serial.println("No se detecta BNO055");
+    while (1);
+  }
+  delay(1000);
+  bno.setExtCrystalUse(true);
+
+  Serial.println("Listo para control PID de direccion y motor");
+
+  // Desactiva CS del SPI para evitar interferencias en I2C
+  pinMode(10, OUTPUT);
+  digitalWrite(10, HIGH);
+
+  // Inicialización de sensores VL53L0X
+  pinMode(XSHUT_2, OUTPUT);
+  pinMode(XSHUT_3, OUTPUT);
+  digitalWrite(XSHUT_2, LOW);
+  digitalWrite(XSHUT_3, LOW);
+  delay(10);
+
+  Wire.begin();
+
+  // Inicializa el primer sensor (sin XSHUT)
+  Serial.println("Inicializando sensor 1...");
+  if (!sensor1.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 1");
+    while (1);
+  }
+  sensor1.setAddress(NEW_ADDRESS_1);
+  Serial.print("Sensor 1 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_1, HEX);
+
+  // Enciende el segundo sensor
+  digitalWrite(XSHUT_2, HIGH);
+  delay(10);
+
+  // Inicializa el segundo sensor
+  Serial.println("Inicializando sensor 2...");
+  if (!sensor2.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 2");
+    while (1);
+  }
+  sensor2.setAddress(NEW_ADDRESS_2);
+  Serial.print("Sensor 2 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_2, HEX);
+
+  // Enciende el tercer sensor
+  digitalWrite(XSHUT_3, HIGH);
+  delay(10);
+
+  // Inicializa el tercer sensor
+  Serial.println("Inicializando sensor 3...");
+  if (!sensor3.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 3");
+    while (1);
+  }
+  sensor3.setAddress(NEW_ADDRESS_3);
+  Serial.print("Sensor 3 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_3, HEX);
+
+  sensor1.startContinuous();
+  sensor2.startContinuous();
+  sensor3.startContinuous();
+  delay(200);
+  tone(8, 1500, 50);
+  delay(70);
+  tone(8, 1500, 50);
+  delay(70);
+}
+
+void moveMotorPID(bool forward, int pulses) {
+  encoderCount = 0;
+
+  // Inicializa motor
+  if (forward) {
+    digitalWrite(MA1, HIGH);
+    digitalWrite(MA2, LOW);
+  } else {
+    digitalWrite(MA1, LOW);
+    digitalWrite(MA2, HIGH);
+  }
+
+  int maxPWM = 200;
+  int minPWM = 80;
+
+  // PID variables
+  float setpoint = facing; // Heading objetivo
+  float last_error = 0;
+  float integral = 0;
+
+  // Lee el heading inicial
+  sensors_event_t event;
+  bno.getEvent(&event);
+
+  while (encoderCount < pulses) {
+    // Lee heading actual
+    bno.getEvent(&event);
+    float heading = event.orientation.x;
+
+    // Calcula error de heading (considera wrap-around 0-360)
+    float error = heading - setpoint;
+    if (error > 180) error -= 360;
+    if (error < -180) error += 360;
+
+    integral += error;
+    float derivative = error - last_error;
+
+    float correction = Kp * error + Ki * integral + Kd * derivative;
+
+    // Corrige servo (90 es recto)
+    int servo_angle = 85 - correction;
+    if (servo_angle < 50) servo_angle = 50;
+    if (servo_angle > 150) servo_angle = 150;
+    direccion.write(servo_angle);
+
+    // Control de velocidad proporcional a la distancia restante
+    int error_dist = pulses - encoderCount;
+    int pwmValue = 0.5 * error_dist;
+    if (pwmValue > maxPWM) pwmValue = maxPWM;
+    if (pwmValue < minPWM) pwmValue = minPWM;
+    analogWrite(PWM, pwmValue);
+
+    // Leer sensores VL53L0X y mostrar por Serial
+    distVL1 = sensor1.readRangeContinuousMillimeters();
+    distVL2 = sensor2.readRangeContinuousMillimeters();
+    distVL3 = sensor3.readRangeContinuousMillimeters();
+
+    Serial.print("Pulsos: "); Serial.print(encoderCount);
+    Serial.print(" | Heading: "); Serial.print(heading);
+    Serial.print(" | Servo: "); Serial.print(servo_angle);
+    Serial.print(" | PWM: "); Serial.print(pwmValue);
+    Serial.print(" | VL1: "); Serial.print(distVL1); Serial.print(" mm");
+    Serial.print(" | VL2: "); Serial.print(distVL2); Serial.print(" mm");
+    Serial.print(" | VL3: "); Serial.print(distVL3); Serial.println(" mm");
+
+    last_error = error;
+    delay(10);
+  }
+
+  // Detener motor y centrar servo
+  analogWrite(PWM, 0);
+  digitalWrite(MA1, LOW);
+  digitalWrite(MA2, LOW);
+  direccion.write(90);
+}
+
+void avanzarDespuesDeGiro(int pasos) {
+  encoderCount = 0;
+  sensors_event_t event;
+  bno.getEvent(&event);
+  float setpoint = facing;
+  float last_error = 0, integral = 0;
+  int maxPWM = 200, minPWM = 80;
+
+  while (encoderCount < pasos) {
+    bno.getEvent(&event);
+    float heading = event.orientation.x;
+    float error = heading - setpoint;
+    if (error > 180) error -= 360;
+    if (error < -180) error += 360;
+    integral += error;
+    float derivative = error - last_error;
+    float correction = Kp * error + Ki * integral + Kd * derivative;
+    int servo_angle = 85 - correction;
+    if (servo_angle < 50) servo_angle = 50;
+    if (servo_angle > 150) servo_angle = 150;
+    direccion.write(servo_angle);
+
+    int error_dist = pasos - encoderCount;
+    int pwmValue = 0.5 * error_dist;
+    if (pwmValue > maxPWM) pwmValue = maxPWM;
+    if (pwmValue < minPWM) pwmValue = minPWM;
+    analogWrite(PWM, pwmValue);
+    digitalWrite(MA1, HIGH);
+    digitalWrite(MA2, LOW);
+
+    last_error = error;
+    delay(10);
+  }
+  analogWrite(PWM, 0);
+  digitalWrite(MA1, LOW);
+  digitalWrite(MA2, LOW);
+  direccion.write(90);
+}
+
+void loop() {
+  // PID variables
+  float setpoint = facing; // Heading objetivo
+  float last_error = 0;
+  float integral = 0;
+  int maxPWM = 200;
+  int minPWM = 80;
+
+  sensors_event_t event;
+  bno.getEvent(&event);
+
+  // Avanza hasta que la pared más cercana desaparezca
+  while (true) {
+    // Lee heading actual
+    bno.getEvent(&event);
+    float heading = event.orientation.x;
+
+    // Calcula error de heading (considera wrap-around 0-360)
+    float error = heading - setpoint;
+    if (error > 180) error -= 360;
+    if (error < -180) error += 360;
+
+    integral += error;
+    float derivative = error - last_error;
+
+    float correction = Kp * error + Ki * integral + Kd * derivative;
+
+    // Corrige servo (90 es recto)
+    int servo_angle = 85 - correction;
+    if (servo_angle < 50) servo_angle = 50;
+    if (servo_angle > 150) servo_angle = 150;
+    direccion.write(servo_angle);
+
+    // PWM constante
+    int pwmValue = maxPWM;
+    analogWrite(PWM, pwmValue);
+    digitalWrite(MA1, HIGH);
+    digitalWrite(MA2, LOW);
+
+    // Leer sensores VL53L0X y mostrar por Serial
+    distVL1 = sensor1.readRangeContinuousMillimeters();
+    distVL2 = sensor2.readRangeContinuousMillimeters();
+    distVL3 = sensor3.readRangeContinuousMillimeters();
+
+    Serial.print("Heading: "); Serial.print(heading);
+    Serial.print(" | Servo: "); Serial.print(servo_angle);
+    Serial.print(" | PWM: "); Serial.print(pwmValue);
+    Serial.print(" | VL1: "); Serial.print(distVL1); Serial.print(" mm");
+    Serial.print(" | VL2: "); Serial.print(distVL2); Serial.print(" mm");
+    Serial.print(" | VL3: "); Serial.print(distVL3); Serial.println(" mm");
+
+    // Chequea si la pared más cercana desapareció
+    if (distVL2 > 800) { // La pared izquierda desapareció, girar a la izquierda
+      orientation--;
+      if (orientation < 0) orientation = 3;
+      Serial.println("Girando a la IZQUIERDA");
+      break;
+    } else if (distVL3 > 800) { // La pared derecha desapareció, girar a la derecha
+      orientation++;
+      if (orientation > 3) orientation = 0;
+      Serial.println("Girando a la DERECHA");
+      break;
+    }
+
+    last_error = error;
+    delay(10);
+  }
+
+  // Detener motor y centrar servo
+  analogWrite(PWM, 0);
+  digitalWrite(MA1, LOW);
+  digitalWrite(MA2, LOW);
+  direccion.write(90);
+
+  // Actualiza el setpoint para el siguiente lado
+  facing = orientation * 90;
+  Serial.print("Nuevo orientation: "); Serial.print(orientation);
+  Serial.print(" | Nuevo facing: "); Serial.println(facing);
+
+  // Avanza una cantidad de pasos antes de volver a chequear la pared
+  avanzarDespuesDeGiro(800); // Cambia 50 por la cantidad de pulsos que quieras como "zona muerta"
+}

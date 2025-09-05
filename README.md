@@ -7,88 +7,37 @@ This repository contains the engineering materials of our autonomous vehicle mod
 
 ### Repository Structure
 
-* [**t-photos**](#t-photos/) – Two team photos: a formal one and a light-hearted group shot.
-* [**v-photos**](#v-photos/) – Six images of the vehicle: front, back, left, right, top, and bottom.
-* [**videos**](#videos/) – A `video.md` containing a link to a YouTube video (public or link-accessible) showing at least 30 seconds of autonomous driving—for each challenge type. 
-* [**schemes**](#schemes/) – Electromechanical schematic diagrams (JPEG, PNG, or PDF) showing how components (electronics, motors, sensors) connect. 
-* [**src**](#src/) – Control software source code for all programmed components.
-* [**models**](#models/) – Files for 3D-printed, laser-cut, or CNC-machined vehicle parts. (If none, the directory can be removed.)
-* [**others**](#others/) – Additional documentation: e.g., guide for connecting to SBC/SBM, hardware specs, communication protocols, datasets. (Can be removed if empty.)
+* [**t-photos**](#t-photos/) – Two team photos: a formal one and a funny group shot.
+* [**r-photos**](#r-photos/) – Six images of the vehicle: front, back, left, right, top, and bottom.
+* [**videos**](#videos/) – A Video of the robot driving.
+* [**schemes**](#schemes/) – Electromechanical schematic diagrams showing how components connect. 
+* [**3Dmodels**](#3Dmodels/) – Files for 3D-printed pieces of the robot
+* [**Code**](#Code/) – Robot code for Arduino Nano
+* **Engineering Journal** – A journal where describes the decisions we made along the project, project description and step-by-step guide to build our robot.
 
----
+### Bill Of Materials
 
-### Introduction
+**Electronics:**
+* 1x Arduino Nano. (Old version)
+* 1x TB6612FNG
+* 1x Diode
+* 1x LN7805
+* 1x Capacitor 100uf
+* 1x Push Button
+* 1x Push Interruptor
+* 1x Active Buzzer
 
-*(To be completed by the team)*
-Describe the code architecture:
+**Components and Sensors:**
+* 3x VL53L0X
+* 1x BNO055 gyroscope
+* 1x MG90S servomotor
+* 1x DC motor N20 with Encoder
+* Mechanical and 3D printed Pieces:
+* 6x Bearings (4mm interior and 10mm exterior)
+* 8x Nuts
+* 8x Washers
+* 1x Threaded rod
 
-* What modules the code consists of, and how they interface with the electromechanical components.
-* The process to build, compile, and upload the code to the vehicle’s controllers.
-* Highlight key design decisions and roles of each component.
+**Engineering Journal**
 
----
-
-### Engineering Journal
-
-Include a thorough engineering journal documenting:
-
-* Motivation behind design choices for mobility, sensors, navigation, and obstacle handling.
-* Progress snapshots, iterations, failed experiments, and learning process.
-* Final design rationale and testing methodology.
-  This journal is required as part of the documentation and scoring criteria.
-
----
-
-### Commit History
-
-Ensure your GitHub history reflects active engineering development:
-
-* **First commit**: at least 2 months before the competition, containing at least one-fifth of the final code.
-* **Second commit**: at least 1 month before the competition.
-* **Third commit**: at least 2 weeks before the competition.
-  Additional commits are encouraged.
-
----
-
-### Vehicle Challenges & Competition Focus
-
-Your README should reflect awareness of the competition’s key aspects:
-
-* The task involves navigating a randomly generated track (variable layout each round), using computer vision and sensor fusion to detect the track and vehicle state. 
-* The vehicle must use open-source hardware and support planning & control beyond simple differential drive (e.g., steering mechanisms)
-* Strategy, creativity, problem-solving, teamwork, and documentation are judged alongside execution and performance. 
-
----
-
-### Sample Outline (Markdown)
-
-```markdown
-# XpriT Robotics – WRO 2025 Future Engineers
-
-## Engineering Materials
-This repository includes all engineering assets for our self-driving vehicle...
-
-### Repository Structure
-- **t-photos/**
-- **v-photos/**
-- **video/**
-- **schemes/**
-- **src/**
-- **models/**
-- **other/**
-
-## Introduction
-(Describe code modules, building process, component interactions...)
-
-## Engineering Journal
-(Design motivation, progress, reflections, final strategy...)
-
-## Commit History
-- First commit: YYYY-MM-DD
-- Second commit: YYYY-MM-DD
-- Third commit: YYYY-MM-DD
-
-## Vehicle Challenges
-(Explain sensor fusion, steering mechanics, autonomy, randomness of rounds...)
-
-
+https://docs.google.com/document/d/1Jj0EOl-bdzsbxWS2QZuM9kGpr0p5ontHu1RqVm_BO6E/edit?usp=sharing
