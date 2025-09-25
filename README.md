@@ -55,6 +55,6 @@ This repository contains the engineering materials of our autonomous vehicle mod
 
 ## Engineering Journal
 
-Here's a link to our Engineering Journal:
+Here's a link to our Engineering Journal: 
 
 https://docs.google.com/document/d/1Jj0EOl-bdzsbxWS2QZuM9kGpr0p5ontHu1RqVm_BO6E/edit?usp=sharing
