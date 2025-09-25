@@ -38,6 +38,7 @@ This repository contains the engineering materials of our autonomous vehicle mod
 
 ### Components and Sensors:
 * 3x Ultrasonic Sensor HC-SR04
+* 1x DFrobot Huskylens AI Camera
 * 1x BNO055 gyroscope
 * 1x MG90S servomotor
 * 1x DC motor N20 with Encoder
@@ -136,6 +137,9 @@ This section provides a detailed guide on how to assemble the robot, from the me
 5. Insert a screw through each wheel and joint, then fasten it with a nut on the opposite side. Repeat for both wheels.  
 6. Mount the `Steering Axle` across the front of the joints, pressing it into the designated holes so it fits securely.  
 
+![image](Others/JointScrew.jpg)
+![image](Others/tireScrew.jpg)
+
 ---
 
 ### 2. Servo Motor
@@ -147,7 +151,10 @@ This section provides a detailed guide on how to assemble the robot, from the me
 4. Fix it in place by mounting the `Servo Motor Holder` above it.  
 5. Ensure the servo arm is aligned with the small hole at the center of the `Steering Axle`. Secure it with a screw.  
 
+![image](Others/ServoScrew.jpg)
+
 ---
+
 
 ### 3. Traction System
 **Required parts:** `Rear Axle Gear`, `Motor Gear`, threaded rod, bearings, wheels, nuts and locknuts  
@@ -161,6 +168,8 @@ This section provides a detailed guide on how to assemble the robot, from the me
 7. Attach the wheels on both ends of the rod, leaving a small part of the rod exposed. Fix them with an additional nut on each side.  
 8. Make sure the `Motor Gear` and the `Rear Axle Gear` are properly aligned so the motor can drive the axle.  
 
+![image](Others/TractionScrew.jpg)
+
 ---
 
 ### 4. Electronics
@@ -170,6 +179,8 @@ This section provides a detailed guide on how to assemble the robot, from the me
 2. Secure it with screws and nuts.  
 3. Mount the perforated PCB board on top of the `Upper Chassis`.  
 4. Position the battery between the two lower pillars, underneath the PCB board.  
+
+![image](Others/UpperChassScrew.jpg)
 
 ---
 
@@ -181,6 +192,9 @@ This section provides a detailed guide on how to assemble the robot, from the me
 3. Connect the `Upper Arm` to the end of the `Lower Arm` and secure it.  
 4. Attach the `Camera Support` at the end of the arm.  
 5. Place the **HuskyLens camera** onto the support and secure it with screws.  
+
+![image](Others/pcb_ceiling_screw.jpg)
+![image](Others/CameraSupportScrew.jpg)
 
 ---
 
