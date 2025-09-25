@@ -120,7 +120,92 @@ A complete circuit schematic is included in the repository under the folder: [**
 #### Additional Components
 - **Buzzer** connected to the Arduino, used as a feedback indicator for distance readings
 
-## Step by Step Asemble Guide
+## Step-by-Step Assembly Guide
+
+This section provides a detailed guide on how to assemble the robot, from the mechanical systems to the electronics, camera setup, and software configuration.  
+
+---
+
+### 1. Steering System
+**Required parts:** `Lower Chassis`, `Left Joint`, `Right Joint`, `Tires`, `Steering Axle`
+
+1. Insert a bearing into each circular slot located at the front ends of the `Lower Chassis`.  
+2. Place the `Left Joint` and `Right Joint` on top of the bearings, aligning them correctly with their sides.  
+3. From the bottom, insert a screw through the bearing and secure it with a nut on top.  
+4. Attach the `Tires` to the joints by inserting their axles into the wheel slot of each joint.  
+5. Insert a screw through each wheel and joint, then fasten it with a nut on the opposite side. Repeat for both wheels.  
+6. Mount the `Steering Axle` across the front of the joints, pressing it into the designated holes so it fits securely.  
+
+---
+
+### 2. Servo Motor
+**Required parts:** `Servo Motor Base`, `Servo Motor Holder`  
+
+1. Place the `Servo Motor Base` slightly behind the steering system, aligning it with the four mounting holes in the chassis.  
+2. Insert screws from the bottom of the chassis and secure them with nuts.  
+3. Place the servo motor on top of the base.  
+4. Fix it in place by mounting the `Servo Motor Holder` above it.  
+5. Ensure the servo arm is aligned with the small hole at the center of the `Steering Axle`. Secure it with a screw.  
+
+---
+
+### 3. Traction System
+**Required parts:** `Rear Axle Gear`, `Motor Gear`, threaded rod, bearings, wheels, nuts and locknuts  
+
+1. Locate the rear section of the chassis where the N20 motor mount and elongated slot are positioned.  
+2. Mount the N20 motor into its slot and attach the `Motor Gear` to its shaft.  
+3. Insert a bearing into each side wall hole of the chassis, pressing them firmly.  
+4. Slide the threaded rod through the first bearing.  
+5. Mount the `Rear Axle Gear` on the rod, then slide the rod through the second bearing. Both ends should extend slightly outside the chassis.  
+6. Place a nut and a locknut on each side of the rod to secure it.  
+7. Attach the wheels on both ends of the rod, leaving a small part of the rod exposed. Fix them with an additional nut on each side.  
+8. Make sure the `Motor Gear` and the `Rear Axle Gear` are properly aligned so the motor can drive the axle.  
+
+---
+
+### 4. Electronics
+**Required part:** `Upper Chassis`  
+
+1. Place the `Upper Chassis` above the main chassis, aligning its screw holes with the rectangular pillars.  
+2. Secure it with screws and nuts.  
+3. Mount the perforated PCB board on top of the `Upper Chassis`.  
+4. Position the battery between the two lower pillars, underneath the PCB board.  
+
+---
+
+### 5. Camera Support
+**Required parts:** `PCB Ceiling`, `Lower Arm`, `Upper Arm`, `Camera Support`  
+
+1. Attach the `PCB Ceiling` by aligning its arms with the `Upper Chassis`.  
+2. Mount the `Lower Arm` in the middle and fasten it with screws.  
+3. Connect the `Upper Arm` to the end of the `Lower Arm` and secure it.  
+4. Attach the `Camera Support` at the end of the arm.  
+5. Place the **HuskyLens camera** onto the support and secure it with screws.  
+
+---
+
+### 6. Uploading the Code
+
+1. Connect the **Arduino Nano** to your computer using a USB Mini-B cable.  
+2. Open the **Arduino IDE** and load the provided code from this repository.  
+3. Click **Upload** and wait until the IDE confirms `Upload complete`.  
+4. Disconnect the cable after uploading.  
+
+---
+
+### 7. HuskyLens Configuration
+
+1. Power on the robot (via battery or USB). The HuskyLens display will turn on.  
+2. Use the dial to navigate through the HuskyLens interface.  
+3. Go to **Settings → Communication Mode** and select **I2C**.  
+4. Return to the main menu and select **Color Recognition** mode.  
+5. Place the green and red obstacles in front of the camera.  
+6. Hold the button next to the dial to train the color recognition.  
+7. Repeat for both obstacles until the camera assigns **ID:1** to one color and **ID:2** to the other.  
+
+---
+
+At this point, your robot is fully assembled, configured, and ready for testing.
 
 
 
