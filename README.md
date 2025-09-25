@@ -252,3 +252,8 @@ Straight Navigation with Gyroscope Correction
 Here's a link to our Engineering Journal: 
 
 https://docs.google.com/document/d/1Jj0EOl-bdzsbxWS2QZuM9kGpr0p5ontHu1RqVm_BO6E/edit?usp=sharing
+
+## Demonstration Video
+
+https://youtu.be/O4qihtPzeu4?si=GkjUZdUodrYpeQK6
+
