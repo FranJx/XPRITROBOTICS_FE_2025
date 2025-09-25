@@ -17,8 +17,8 @@ This repository contains the engineering materials of our autonomous vehicle mod
 
 ## Folders Content
 
-* [**T-photos**](T-photos/) – Two team photos: a formal one and a funny group shot.
-* [**R-photos**](R-photos/) – Six images of the vehicle: front, back, left, right, top, and bottom.
+* [**T-photos**](t-photos/) – Two team photos: a formal one and a funny group shot.
+* [**R-photos**](r-photos/) – Six images of the vehicle: front, back, left, right, top, and bottom.
 * [**Video**](Videos/) – A Video of the robot driving.
 * [**Schemes**](Schemes/) – Electromechanical schematic diagrams showing how components connect. 
 * [**3Dmodels**](3Dmodels/) – Files for 3D-printed pieces of the robot
