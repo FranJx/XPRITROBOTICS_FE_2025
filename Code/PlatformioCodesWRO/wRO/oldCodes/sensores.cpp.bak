@@ -1,0 +1,89 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <VL53L0X.h>
+
+#define NEW_ADDRESS_1 0x30
+#define NEW_ADDRESS_2 0x31
+#define NEW_ADDRESS_3 0x32
+#define XSHUT_2 11   // Cambia por el pin que uses para XSHUT del segundo sensor
+#define XSHUT_3 12   // Cambia por el pin que uses para XSHUT del tercer sensor
+
+VL53L0X sensor1;
+VL53L0X sensor2;
+VL53L0X sensor3;
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  Wire.begin();
+
+  // Desactiva CS del SPI para evitar interferencias en I2C
+  pinMode(10, OUTPUT);
+  digitalWrite(10, HIGH);
+
+  // Configura XSHUT de los sensores 2 y 3 como salida y los apaga
+  pinMode(XSHUT_2, OUTPUT);
+  pinMode(XSHUT_3, OUTPUT);
+  digitalWrite(XSHUT_2, LOW);
+  digitalWrite(XSHUT_3, LOW);
+  delay(10);
+
+  // Inicializa el primer sensor (sin XSHUT)
+  Serial.println("Inicializando sensor 1...");
+  if (!sensor1.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 1");
+    while (1);
+  }
+  sensor1.setAddress(NEW_ADDRESS_1);
+  Serial.print("Sensor 1 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_1, HEX);
+
+  // Enciende el segundo sensor
+  digitalWrite(XSHUT_2, HIGH);
+  delay(10);
+
+  // Inicializa el segundo sensor
+  Serial.println("Inicializando sensor 2...");
+  if (!sensor2.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 2");
+    while (1);
+  }
+  sensor2.setAddress(NEW_ADDRESS_2);
+  Serial.print("Sensor 2 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_2, HEX);
+
+  // Enciende el tercer sensor
+  digitalWrite(XSHUT_3, HIGH);
+  delay(10);
+
+  // Inicializa el tercer sensor
+  Serial.println("Inicializando sensor 3...");
+  if (!sensor3.init(true)) {
+    Serial.println("Fallo al inicializar el sensor 3");
+    while (1);
+  }
+  sensor3.setAddress(NEW_ADDRESS_3);
+  Serial.print("Sensor 3 direccionado a 0x");
+  Serial.println(NEW_ADDRESS_3, HEX);
+
+  sensor1.startContinuous();
+  sensor2.startContinuous();
+  sensor3.startContinuous();
+  Serial.println("Sensores VL53L0X listos y en modo continuo.");
+}
+
+void loop() {
+  int distancia1 = sensor1.readRangeContinuousMillimeters();
+  int distancia2 = sensor2.readRangeContinuousMillimeters();
+  int distancia3 = sensor3.readRangeContinuousMillimeters();
+
+  Serial.print("Distancia 1: ");
+  Serial.print(distancia1);
+  Serial.print(" mm | Distancia 2: ");
+  Serial.print(distancia2);
+  Serial.print(" mm | Distancia 3: ");
+  Serial.print(distancia3);
+  Serial.println(" mm");
+  delay(100);
+}

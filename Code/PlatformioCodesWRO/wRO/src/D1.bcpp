@@ -1,0 +1,158 @@
+
+
+#include <Arduino.h>
+#include <Servo.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+
+#define TRIG_IZQ A2
+#define ECHO_IZQ A3
+#define TRIG_DER A0
+#define ECHO_DER A1
+#define MA1 5
+#define MA2 4
+#define PWM 6
+#define SERVO_PIN 9
+#define ENCODER_A 3
+
+Servo direccion;
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+float Kp = 1.1, Ki = 0.0, Kd = 2.0;
+int centroServo = 90;
+int limAng = 43;
+const int pwmRecto = 100;
+const int pwmGiro = 180;
+
+volatile long encoderCount = 0;
+int orientation = 0;
+float setpoint = 0;
+bool bloqueado = false;
+long pulsosBloqueo = 0;
+const long PULSOS_GIRO = 1000; // Cambia este valor según lo que necesites
+
+long medirDistancia(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duracion = pulseIn(echoPin, HIGH, 25000);
+  long distancia = duracion * 0.017;
+  if (distancia == 0) distancia = 4000;
+  return distancia;
+}
+
+void encoderISR() {
+  encoderCount++;
+}
+
+void bloquearHeading(long pulsos) {
+  bloqueado = true;
+  pulsosBloqueo = encoderCount + pulsos;
+}
+
+void actualizarOrientation(int delta) {
+  orientation += delta;
+  if (orientation < 0) orientation = 3;
+  if (orientation > 3) orientation = 0;
+  setpoint = orientation * 90;
+  bloquearHeading(PULSOS_GIRO);
+}
+
+void setup() {
+  pinMode(8, OUTPUT); // buzzer
+  Serial.begin(9200);
+  pinMode(MA1, OUTPUT);
+  pinMode(MA2, OUTPUT);
+  pinMode(PWM, OUTPUT);
+  pinMode(ENCODER_A, INPUT_PULLUP);
+  direccion.attach(SERVO_PIN);
+  direccion.write(90);
+  delay(500);
+  direccion.write(centroServo);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_A), encoderISR, RISING);
+  if (!bno.begin()) {
+    Serial.println("No se detecta BNO055");
+    while (1);
+  }
+  bno.setExtCrystalUse(true);
+  pinMode(TRIG_IZQ, OUTPUT);
+  pinMode(ECHO_IZQ, INPUT);
+  pinMode(TRIG_DER, OUTPUT);
+  pinMode(ECHO_DER, INPUT);
+  sensors_event_t event;
+  bno.getEvent(&event);
+  setpoint = event.orientation.x;
+  orientation = 0;
+  encoderCount = 0;
+  bloqueado = false;
+  delay(1000);
+}
+
+void loop() {
+  // Si algún sensor mide más de 90 cm, suena el buzzer
+  
+
+  sensors_event_t event;
+  bno.getEvent(&event);
+  float heading = event.orientation.x;
+  long distIzq = medirDistancia(TRIG_IZQ, ECHO_IZQ);
+  long distDer = medirDistancia(TRIG_DER, ECHO_DER);
+  if (distIzq > 200 || distDer > 200) {
+      tone(8, 5000, 10);
+    }else
+  // Si algún sensor mide más de 90 cm, suena el buzzer
+  if (distIzq > 90 || distDer > 90) {
+    tone(8, 1500, 10);
+  }
+
+  // PID para mantener heading
+  float error = heading - setpoint;
+  if (error > 180) error -= 360;
+  if (error < -180) error += 360;
+  static float integral = 0, last_error = 0;
+  integral += error;
+  float derivative = error - last_error;
+  float correction = Kp * error + Ki * integral + Kd * derivative;
+  int servo_angle = centroServo - correction;
+  if (servo_angle < centroServo - limAng) servo_angle = centroServo - limAng;
+  if (servo_angle > centroServo + limAng) servo_angle = centroServo + limAng;
+  direccion.write(servo_angle);
+  last_error = error;
+
+
+  // Avanzar motor: PWM depende de si está girando (bloqueado) o recto
+  if (bloqueado) {
+    analogWrite(PWM, pwmGiro);
+  } else {
+    analogWrite(PWM, pwmRecto);
+  }
+  digitalWrite(MA1, HIGH);
+  digitalWrite(MA2, LOW);
+
+  // Cambiar heading solo si no está bloqueado
+  if (!bloqueado) {
+    if (distIzq > 100) {
+      actualizarOrientation(-1);
+    } else if (distDer > 100) {
+      actualizarOrientation(1);
+    }
+  } else {
+    float errorHeading = heading - setpoint;
+    if (errorHeading > 180) errorHeading -= 360;
+    if (errorHeading < -180) errorHeading += 360;
+    if (encoderCount >= pulsosBloqueo && abs(errorHeading) < 10) {
+      bloqueado = false;
+    }
+  }
+
+  // (Opcional) imprimir estado por Serial
+  Serial.print("Heading: "); Serial.print(heading);
+  Serial.print(" | Setpoint: "); Serial.print(setpoint);
+  Serial.print(" | Orientation: "); Serial.print(orientation);
+  Serial.print(" | Encoder: "); Serial.print(encoderCount);
+  Serial.print(" | US Izq: "); Serial.print(distIzq);
+  Serial.print(" | US Der: "); Serial.println(distDer);
+
+  
+}

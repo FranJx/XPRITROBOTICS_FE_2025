@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"name": "wRO",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.bak": "cpp",
+			"*.bak2": "cpp"
+		}
+	}
+}

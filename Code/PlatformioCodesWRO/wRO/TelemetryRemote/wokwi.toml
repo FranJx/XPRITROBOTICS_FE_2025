@@ -1,0 +1,23 @@
+[wokwi]
+version = 1
+
+[[chip]]
+name = "esp32"
+board = "esp32-devkit-v1"
+
+[[part]]
+name = "oled"
+type = "ssd1306"
+i2c = ["21", "22"]
+width = 128
+height = 64
+
+[[part]]
+name = "btn_next"
+type = "button"
+pin = 32
+
+[[part]]
+name = "btn_prev"
+type = "button"
+pin = 33
