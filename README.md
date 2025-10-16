@@ -180,7 +180,7 @@ This section provides a detailed guide on how to assemble the robot, from the me
 3. Mount the perforated PCB board on top of the `Upper Chassis`.  
 4. Position the battery between the two lower pillars, underneath the PCB board.  
 
-![image](Others/UpperChassScrew.jpg)
+![image5](Others/UpperChassScrew.jpg)
 
 ---
 
@@ -245,6 +245,14 @@ Straight Navigation with Gyroscope Correction
 
  After a predefined number of turns, the robot drives forward for an additional encoder-based distance and then stops completely. This guarantees that the robot finishes the run in a controlled and repeatable manner.
 
+## Robot Pictures From All Angules
+
+![image](r-photos/RobotFrontView.jpg)
+![image](r-photos/RobotBackView.jpg)
+![image](r-photos/RobotRightView.jpg)
+![image](r-photos/RobotLeftView.jpg)
+![image](r-photos/RobotTopView.jpg)
+![image](r-photos/RobotBottomView.jpg)
 
 
 ## Engineering Journal
@@ -253,7 +261,7 @@ Here's a link to our Engineering Journal:
 
 https://docs.google.com/document/d/1Jj0EOl-bdzsbxWS2QZuM9kGpr0p5ontHu1RqVm_BO6E/edit?usp=sharing
 
-## Demonstration Video
+## Demonstration Videos
 
 https://youtu.be/O4qihtPzeu4?si=GkjUZdUodrYpeQK6
 
