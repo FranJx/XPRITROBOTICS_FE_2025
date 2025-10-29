@@ -7,14 +7,14 @@ Through our projects, we explore robotics and engineering challenges to expand o
 For this competition, we aim to design a robot capable of avoiding obstacles, completing a circuit, and parking in a designated area.
 
 This repository contains the engineering materials of our autonomous vehicle model developed by **XpriT Robotics**, competing in the **WRO 2025 Future Engineers** category. It includes source code, documentation, design files, photos, schematics, and a driving demonstration video.
-
+---
 ## Repository Structure
 
 * [**Bill Of Materials**](#bill-of-materials) - Bill Of all the Materials we used in this project covering mechanical pieces, 3D printed pieces, components and electronics.
 * [**Step by Step Asemble Guide**](#step-by-step-asemble-guide) – This section provides a step-by-step guide, covering everything from assembling the parts to uploading the code and configuring some of the components.
 * [**Software and Code Explanation**](#software-and-code-explanation) – This section provides a step-by-step guide, covering everything from assembling the parts to uploading the code and configuring some of the components.
 * [**Engineering Journal**](#engineering-journal) – A journal where describes the decisions we made along the project.
-
+---
 ## Folders Content
 
 * [**T-photos**](t-photos/) – Two team photos: a formal one and a funny group shot.
@@ -23,7 +23,24 @@ This repository contains the engineering materials of our autonomous vehicle mod
 * [**Schemes**](Schemes/) – Electromechanical schematic diagrams showing how components connect. 
 * [**3Dmodels**](3Dmodels/) – Files for 3D-printed pieces of the robot
 * [**Code**](Code/) – Robot code for Arduino Nano
+---
+## Meet the Robot
+We proudly present **Kmioncito**, our robot for the WRO Future Engineers 2025 challenge.  
+Its name, derived from the Spanish word *“camioncito”* (“little truck”), reflects its compact, sturdy design and the friendly personality we associate with our creations.
+Kmioncito represents the result of months of teamwork, testing, and design iteration — combining **3D-printed mechanics**, **intelligent electronics**, and **optimized software** for autonomous navigation and obstacle avoidance.
+### Robot Pictures From All Angules
 
+![image](r-photos/RobotFrontView.jpg)
+![image](r-photos/RobotBackView.jpg)
+![image](r-photos/RobotRightView.jpg)
+![image](r-photos/RobotLeftView.jpg)
+![image](r-photos/RobotTopView.jpg)
+![image](r-photos/RobotBottomView.jpg)
+
+
+You can explore the mechanical, electronic, and software design in the sections below for detailed implementation.
+
+---
 ## Bill Of Materials
 
 ### Electronics:
@@ -50,7 +67,7 @@ This repository contains the engineering materials of our autonomous vehicle mod
 * 8x Washers
 * 1x Threaded rod
 * Every 3D model in the [**3Dmodels**](3Dmodels/) folder
-
+---
 ## Project Overview
 
 ### Mechanical Design
@@ -120,12 +137,12 @@ A complete circuit schematic is included in the repository under the folder: [**
 
 #### Additional Components
 - **Buzzer** connected to the Arduino, used as a feedback indicator for distance readings
-
+---
 ## Step-by-Step Assembly Guide
 
 This section provides a detailed guide on how to assemble the robot, from the mechanical systems to the electronics, camera setup, and software configuration.  
 
----
+
 
 ### 1. Steering System
 **Required parts:** `Lower Chassis`, `Left Joint`, `Right Joint`, `Tires`, `Steering Axle`
@@ -228,40 +245,51 @@ At this point, your robot is fully assembled, configured, and ready for testing.
 The robot’s code was designed to combine stability, reliability, and adaptability during the challenge. Its behavior can be summarized in four main stages:
 Straight Navigation with Gyroscope Correction
 
- The robot advances forward while continuously correcting its heading using the BNO055 gyroscope. If it drifts from the desired orientation, the servo adjusts to bring it back on course, ensuring consistent straight-line movement.
+The robot advances forward while continuously correcting its heading using the BNO055 gyroscope. If it drifts from the desired orientation, the servo adjusts to bring it back on course, ensuring consistent straight-line movement.
 
 
 ### Corridor Turns with Ultrasonic Sensors
 
- When one of the ultrasonic sensors detects open space to the left or right, the robot executes a precise 90° turn in that direction. The encoder ensures that the turn is completed fully by measuring wheel pulses, preventing incomplete or unstable turns.
+When one of the ultrasonic sensors detects open space to the left or right, the robot executes a precise 90° turn in that direction. The encoder ensures that the turn is completed fully by measuring wheel pulses, preventing incomplete or unstable turns.
 
 
 ### Object Avoidance with Vision (HuskyLens)
 
- If the HuskyLens camera detects a red or green cube, the robot immediately prioritizes avoidance. It steers away from the object’s position and moves forward until the obstacle is no longer detected. Once clear, it recenters the servo and resumes its planned trajectory.
+If the HuskyLens camera detects a red or green cube, the robot immediately prioritizes avoidance. It steers away from the object’s position and moves forward until the obstacle is no longer detected. Once clear, it recenters the servo and resumes its planned trajectory.
+
+### Parking
+
+At the beginning of the run, Kmioncito starts inside the parking area.  
+Using the HuskyLens AI camera, it scans the first quadrant of its field of view to check if it can detect the pink color (ID:3) that represents the parking zone.  
+Once the camera identifies this color, the robot determines its initial position and exits the parking area by moving toward the opposite direction of the detected wall.
+
+As the robot leaves the zone, it uses its motor encoder to measure the distance traveled.  
+If the distance exceeds one meter, the robot concludes that the parking zone is located at the rear side of the circuit.  
+If it travels less than one meter, the robot determines that the parking zone is at the front side.  
+This information is saved as a reference variable for the final part of the challenge.
+
+After this step, Kmioncito continues its normal navigation, avoiding obstacles and following the circuit path.  
+It ignores the parking area until the final stage of the run.
+
+When it is time to park, the robot recalls the previously stored information about whether the parking zone is in the front or rear part of the field.  
+It then moves toward that area, aligning its rear side with the front edge of the parking zone.  
+Once aligned, it performs a 90° turn to face the parking area and starts reversing.  
+While moving backward, the robot uses its ultrasonic sensors to detect the wall behind it.  
+As soon as the wall is detected, it moves slightly forward, performs another 90° turn, and finally positions itself parallel to the wall, completing the parking maneuver.
 
 
 ### Completion of the Route
 
- After a predefined number of turns, the robot drives forward for an additional encoder-based distance and then stops completely. This guarantees that the robot finishes the run in a controlled and repeatable manner.
+After a predefined number of turns, the robot drives forward for an additional encoder-based distance and then stops completely. This guarantees that the robot finishes the run in a controlled and repeatable manner.
 
-## Robot Pictures From All Angules
-
-![image](r-photos/RobotFrontView.jpg)
-![image](r-photos/RobotBackView.jpg)
-![image](r-photos/RobotRightView.jpg)
-![image](r-photos/RobotLeftView.jpg)
-![image](r-photos/RobotTopView.jpg)
-![image](r-photos/RobotBottomView.jpg)
-
-
+---
 ## Engineering Journal
 
 Here's a link to our Engineering Journal: 
 
 https://docs.google.com/document/d/1Jj0EOl-bdzsbxWS2QZuM9kGpr0p5ontHu1RqVm_BO6E/edit?usp=sharing
-
+---
 ## Demonstration Videos
 
 https://youtu.be/O4qihtPzeu4?si=GkjUZdUodrYpeQK6
-
+---
